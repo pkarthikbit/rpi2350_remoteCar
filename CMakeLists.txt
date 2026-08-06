@@ -40,9 +40,6 @@ add_executable(rpi2350_remoteCar rpi2350_remoteCar.c )
 pico_set_program_name(rpi2350_remoteCar "rpi2350_remoteCar")
 pico_set_program_version(rpi2350_remoteCar "0.1")
 
-# no_flash means the target is to run from RAM
-pico_set_binary_type(rpi2350_remoteCar no_flash)
-
 # Generate PIO header
 pico_generate_pio_header(rpi2350_remoteCar ${CMAKE_CURRENT_LIST_DIR}/blink.pio)
 
