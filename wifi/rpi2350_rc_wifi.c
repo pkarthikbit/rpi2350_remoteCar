@@ -2,9 +2,9 @@
  * Copyright (c) inveh.
  *
  */
-#include "rpi2350_ha_wifi_inf.h"
-#include "rpi2350_ha_wifi_priv.h"
-#include "rpi2350_ha_wifi_pub.h"
+#include "rpi2350_rc_wifi_inf.h"
+#include "rpi2350_rc_wifi_priv.h"
+#include "rpi2350_rc_wifi_pub.h"
 
 // Temperature
 #ifndef TEMPERATURE_UNITS
@@ -88,7 +88,7 @@ typedef struct {
 #define MQTT_UNIQUE_TOPIC 0
 #endif
 
-wifi_device_state_t rpi2350_ha_wifi_st;
+wifi_device_state_t rpi2350_rc_wifi_st;
 
 /******************************************************************
  * Temperature
@@ -342,7 +342,7 @@ static MQTT_CLIENT_DATA_T* mqtt_client_init(void) {
 /**
  * @brief Initializes the Wi-Fi functionality using the CYW43 driver.
  */
-void rpi2350_ha_wifi_init(void) 
+void rpi2350_rc_wifi_init(void) 
 {
     INFO_printf("mqtt client starting\n");
 
@@ -350,19 +350,19 @@ void rpi2350_ha_wifi_init(void)
     adc_set_temp_sensor_enabled(true);
     adc_select_input(4);
 
-    rpi2350_ha_wifi_st = DEVICE_WIFI_START_UP;
+    rpi2350_rc_wifi_st = DEVICE_WIFI_START_UP;
 }
 
-void rpi2350_ha_wifi_1000ms() 
+void rpi2350_rc_wifi_1000ms() 
 {    
     int rc;
     MQTT_CLIENT_DATA_T *state = mqtt_client_init();
 
-    switch (rpi2350_ha_wifi_st)
+    switch (rpi2350_rc_wifi_st)
     {
         case DEVICE_WIFI_START_UP:
         {
-            if(rpi2350_ha_ble_st != 0)
+            if(rpi2350_rc_ble_st != 0)
             {     
                 // Use board unique id
                 char unique_id_buf[5];
@@ -414,7 +414,7 @@ void rpi2350_ha_wifi_1000ms()
             #endif
 
                 cyw43_arch_enable_sta_mode();
-                if (cyw43_arch_wifi_connect_timeout_ms(rpi2350_ha_ble_ssid, rpi2350_ha_ble_password, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
+                if (cyw43_arch_wifi_connect_timeout_ms(rpi2350_rc_ble_ssid, rpi2350_rc_ble_password, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
                 {
                     panic("Failed to connect");
                 }
@@ -436,18 +436,18 @@ void rpi2350_ha_wifi_1000ms()
                 else if (err != ERR_INPROGRESS) 
                 { // ERR_INPROGRESS means expect a callback
                     panic("dns request failed");
-                    rpi2350_ha_wifi_st = DEVICE_WIFI_ERROR; 
+                    rpi2350_rc_wifi_st = DEVICE_WIFI_ERROR; 
                 }
 
                 if (!state->connect_done || mqtt_client_is_connected(state->mqtt_client_inst)) 
                 {
                     INFO_printf("mqtt client running\n");
-                    rpi2350_ha_wifi_st = DEVICE_WIFI_RUNNING;
+                    rpi2350_rc_wifi_st = DEVICE_WIFI_RUNNING;
                 }
                 else
                 {
                     INFO_printf("mqtt client exiting\n");
-                    rpi2350_ha_wifi_st = DEVICE_WIFI_ERROR;
+                    rpi2350_rc_wifi_st = DEVICE_WIFI_ERROR;
                 }
             }
         }
@@ -455,7 +455,7 @@ void rpi2350_ha_wifi_1000ms()
 
         case DEVICE_WIFI_RUNNING:
         {
-            rpi2350_ha_wifi_st = DEVICE_WIFI_RUNNING;
+            rpi2350_rc_wifi_st = DEVICE_WIFI_RUNNING;
         }
         break;
 

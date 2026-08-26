@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.5)
 set(FREERTOS_KERNEL_PATH "/home/priyanka/FreeRTOS-Kernel")
 set(PICO_SDK_PATH "/home/priyanka/pico-sdk")
 set(PICOTOOL_FETCH_FROM_GIT_PATH "/home/priyanka/picotool")
+set(PICO_PLATFORM rp2350)
+set(PICO_BOARD pico2_w)
 
 # Pull in SDK (must be before project)
 include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 # Pull in FreeRTOS
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/Community-Supported-Ports/GCC/RP2350_ARM_NTZ/FreeRTOS_Kernel_import.cmake)
-
-set(PICO_PLATFORM=rp2350)
 
 project(rpi2350_ha C CXX ASM)
 set(CMAKE_C_STANDARD 11)
@@ -21,13 +21,13 @@ pico_sdk_init()
 
 # rest of your project
 add_executable(rpi2350_ha
-    ble/rpi2350_ha_ble.c
-    os_sched/rpi2350_ha_os_sched.c
-    wifi/rpi2350_ha_wifi.c
+    ble/rpi2350_rc_ble.c
+    os_sched/rpi2350_rc_os_sched.c
+    wifi/rpi2350_rc_wifi.c
 )
 
 pico_btstack_make_gatt_header(rpi2350_ha
-    PRIVATE "${CMAKE_CURRENT_LIST_DIR}/ble/rpi2350_ha_ble_provisioning.gatt")
+    PRIVATE "${CMAKE_CURRENT_LIST_DIR}/ble/rpi2350_rc_ble_provisioning.gatt")
 
 # Add include directories
 target_include_directories(rpi2350_ha

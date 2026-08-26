@@ -2,11 +2,11 @@
  * Copyright (c) inveh.
  *
  */
-#include "rpi2350_ha_wifi_priv.h"
-#include "rpi2350_ha_ble_inf.h"
-#include "rpi2350_ha_ble_priv.h"
-#include "rpi2350_ha_ble_pub.h"
-#include "rpi2350_ha_ble_provisioning.h"  /* exclusively for attribute_handle_t */
+#include "rpi2350_rc_wifi_priv.h"
+#include "rpi2350_rc_ble_inf.h"
+#include "rpi2350_rc_ble_priv.h"
+#include "rpi2350_rc_ble_pub.h"
+#include "rpi2350_rc_ble_provisioning.h"  /* exclusively for attribute_handle_t */
 typedef enum {
     WIFI_SSID_HANDLE = ATT_CHARACTERISTIC_be3d7601_0ea0_4e96_82e0_89aa6a3dc19f_01_VALUE_HANDLE,
     WIFI_PASSWORD_HANDLE = ATT_CHARACTERISTIC_be3d7602_0ea0_4e96_82e0_89aa6a3dc19f_01_VALUE_HANDLE,
@@ -22,10 +22,10 @@ hci_con_handle_t con_handle;
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 static btstack_packet_callback_registration_t sm_event_callback_registration;
 static uint64_t last_toggle_time = 0;
-int rpi2350_ha_ble_st = 0;
-int rpi2350_ha_ble_fdbck = 0;
-char rpi2350_ha_ble_ssid[33];
-char rpi2350_ha_ble_password[64];
+int rpi2350_rc_ble_st = 0;
+int rpi2350_rc_ble_fdbck = 0;
+char rpi2350_rc_ble_ssid[33];
+char rpi2350_rc_ble_password[64];
 
 #define APP_AD_FLAGS 0x06
 
@@ -229,14 +229,14 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
             }
 
             memcpy(wifi_setting.ssid, buffer, buffer_size);
-            memcpy(rpi2350_ha_ble_ssid, buffer, buffer_size);
+            memcpy(rpi2350_rc_ble_ssid, buffer, buffer_size);
 
             wifi_setting.ssid[buffer_size] = '\0';
-            rpi2350_ha_ble_ssid[buffer_size] = '\0';
+            rpi2350_rc_ble_ssid[buffer_size] = '\0';
 
             if (strlen(wifi_setting.ssid) > 0 && strlen(wifi_setting.password) > 0) 
             {
-                rpi2350_ha_ble_st = 1;
+                rpi2350_rc_ble_st = 1;
             }
         }
         break;
@@ -249,14 +249,14 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
             }
 
             memcpy(wifi_setting.password, buffer, buffer_size);
-            memcpy(rpi2350_ha_ble_password, buffer, buffer_size);
+            memcpy(rpi2350_rc_ble_password, buffer, buffer_size);
 
             wifi_setting.password[buffer_size] = '\0';
-            rpi2350_ha_ble_password[buffer_size] = '\0';
+            rpi2350_rc_ble_password[buffer_size] = '\0';
 
             if (strlen(wifi_setting.ssid) > 0 && strlen(wifi_setting.password) > 0) 
             {                
-                rpi2350_ha_ble_st = 1;
+                rpi2350_rc_ble_st = 1;
             }
         }
         break;
@@ -438,7 +438,7 @@ static void device_task(void)
 {
     bool led_state = cyw43_arch_gpio_get(CYW43_WL_GPIO_LED_PIN);
 
-    if(rpi2350_ha_ble_st != 0)
+    if(rpi2350_rc_ble_st != 0)
     {
         /* do nothing as Mqtt takes over the control after wifi connected */
     }
@@ -452,7 +452,7 @@ static void device_task(void)
     }   
 }
 
-void rpi2350_ha_ble_init()
+void rpi2350_rc_ble_init()
 {
     stdio_init_all();
 
@@ -478,12 +478,12 @@ void rpi2350_ha_ble_init()
     hci_power_control(HCI_POWER_ON);
 }
 
-void rpi2350_ha_ble_10ms()
+void rpi2350_rc_ble_10ms()
 {
     device_task();
 
-    if ((rpi2350_ha_wifi_st == DEVICE_WIFI_RUNNING) &&
-        (rpi2350_ha_ble_fdbck == 0))
+    if ((rpi2350_rc_wifi_st == DEVICE_WIFI_RUNNING) &&
+        (rpi2350_rc_ble_fdbck == 0))
     {
         notify_string_t notify;
         notify.data = wifi_setting.ip_address;
@@ -494,7 +494,7 @@ void rpi2350_ha_ble_10ms()
         context_registration.context = &notify;
         att_server_request_to_send_notification(&context_registration, con_handle);
 
-        rpi2350_ha_ble_fdbck = 1;
+        rpi2350_rc_ble_fdbck = 1;
     }
 
     if (le_notification_enabled) 

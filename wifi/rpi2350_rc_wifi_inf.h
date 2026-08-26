@@ -31,6 +31,6 @@
 #include "lwipopts.h"
 #include "mbedtls_config.h"
 
-#include "rpi2350_ha_ble_pub.h"
+#include "rpi2350_rc_ble_pub.h"
 
 #endif /* _RPI2350_HA_WIFI_INF_H */
