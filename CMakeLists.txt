@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(FREERTOS_KERNEL_PATH "/home/priyanka/FreeRTOS-Kernel")
-set(PICO_SDK_PATH "/home/priyanka/pico-sdk")
-set(PICOTOOL_FETCH_FROM_GIT_PATH "/home/priyanka/picotool")
+set(FREERTOS_KERNEL_PATH "/home/karthik/FreeRTOS-Kernel")
+set(PICO_SDK_PATH "/home/karthik/pico-sdk")
+set(PICOTOOL_FETCH_FROM_GIT_PATH "/home/karthik/picotool")
 set(PICO_PLATFORM rp2350)
 set(PICO_BOARD pico2_w)
 
@@ -10,7 +10,7 @@ set(PICO_BOARD pico2_w)
 include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 # Pull in FreeRTOS
-include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/Community-Supported-Ports/GCC/RP2350_ARM_NTZ/FreeRTOS_Kernel_import.cmake)
+include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2350_ARM_NTZ/FreeRTOS_Kernel_import.cmake)
 
 project(rpi2350_ha C CXX ASM)
 set(CMAKE_C_STANDARD 11)
