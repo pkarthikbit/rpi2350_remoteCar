@@ -1,7 +1,7 @@
-#ifndef _RPI2350_HA_OS_SCHED_PUB_H
-#define _RPI2350_HA_OS_SCHED_PUB_H
+#ifndef _RPI2350_RC_OS_SCHED_PUB_H
+#define _RPI2350_RC_OS_SCHED_PUB_H
 
 
 
 
-#endif /* _RPI2350_HA_OS_SCHED_PUB_H */
+#endif /* _RPI2350_RC_OS_SCHED_PUB_H */

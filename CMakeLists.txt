@@ -12,7 +12,7 @@ include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 # Pull in FreeRTOS
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2350_ARM_NTZ/FreeRTOS_Kernel_import.cmake)
 
-project(rpi2350_ha C CXX ASM)
+project(rpi2350_rc C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -20,17 +20,17 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 # rest of your project
-add_executable(rpi2350_ha
+add_executable(rpi2350_rc
     ble/rpi2350_rc_ble.c
     os_sched/rpi2350_rc_os_sched.c
     wifi/rpi2350_rc_wifi.c
 )
 
-pico_btstack_make_gatt_header(rpi2350_ha
+pico_btstack_make_gatt_header(rpi2350_rc
     PRIVATE "${CMAKE_CURRENT_LIST_DIR}/ble/rpi2350_rc_ble_provisioning.gatt")
 
 # Add include directories
-target_include_directories(rpi2350_ha
+target_include_directories(rpi2350_rc
 	PRIVATE ${CMAKE_CURRENT_LIST_DIR}/ble
 	PRIVATE ${CMAKE_CURRENT_LIST_DIR}/os_sched
     PRIVATE ${CMAKE_CURRENT_LIST_DIR}/wifi
@@ -38,7 +38,7 @@ target_include_directories(rpi2350_ha
 )
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(rpi2350_ha 
+target_link_libraries(rpi2350_rc 
 FreeRTOS-Kernel 
 FreeRTOS-Kernel-Heap4 
 pico_stdlib
@@ -52,11 +52,11 @@ pico_lwip_mbedtls
 )
 
 # enable usb output, disable uart output
-pico_enable_stdio_usb(rpi2350_ha 1)
-pico_enable_stdio_uart(rpi2350_ha 0)
+pico_enable_stdio_usb(rpi2350_rc 1)
+pico_enable_stdio_uart(rpi2350_rc 0)
 
 # create map/bin/hex/uf2 file in addition to ELF.
-pico_add_extra_outputs(rpi2350_ha)
+pico_add_extra_outputs(rpi2350_rc)
 
 # Ignore warnings from lwip code
 set_source_files_properties(

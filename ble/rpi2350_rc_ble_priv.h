@@ -1,5 +1,5 @@
-#ifndef _RPI2350_HA_BLE_PRIV_H
-#define _RPI2350_HA_BLE_PRIV_H
+#ifndef _RPI2350_RC_BLE_PRIV_H
+#define _RPI2350_RC_BLE_PRIV_H
 
 typedef struct {
     char *data;
@@ -7,5 +7,5 @@ typedef struct {
     hci_con_handle_t *con_handle;
 } notify_string_t;
 
-#endif  /* _RPI2350_HA_BLE_PRIV_H */
+#endif  /* _RPI2350_RC_BLE_PRIV_H */
 

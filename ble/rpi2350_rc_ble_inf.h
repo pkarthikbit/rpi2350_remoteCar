@@ -3,8 +3,8 @@
  *
  */
 
-#ifndef _RPI2350_HA_BLE_INF_H
-#define _RPI2350_HA_BLE_INF_H
+#ifndef _RPI2350_RC_BLE_INF_H
+#define _RPI2350_RC_BLE_INF_H
 
 #include <stdio.h>
 
@@ -22,4 +22,4 @@
 
 #include "rpi2350_rc_wifi_pub.h"
 
-#endif /* _RPI2350_HA_BLE_INF_H */
+#endif /* _RPI2350_RC_BLE_INF_H */

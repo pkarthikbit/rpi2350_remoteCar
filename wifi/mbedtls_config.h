@@ -1,5 +1,5 @@
-#ifndef MBEDTLS_CONFIG_RPI2350_HA_H
-#define MBEDTLS_CONFIG_RPI2350_HA_H
+#ifndef MBEDTLS_CONFIG_RPI2350_RC_H
+#define MBEDTLS_CONFIG_RPI2350_RC_H
 
 /* Workaround for some mbedtls source files using INT_MAX without including limits.h */
 #include <limits.h>

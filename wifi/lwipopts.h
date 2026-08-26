@@ -1,5 +1,5 @@
-#ifndef _LWIPOPTS_RPI2350_HA_H
-#define _LWIPOPTS_RPI2350_HA_H
+#ifndef _LWIPOPTS_RPI2350_RC_H
+#define _LWIPOPTS_RPI2350_RC_H
 
 // Common settings used in most of the pico_w examples
 // (see https://www.nongnu.org/lwip/2_1_x/group__lwip__opts.html for details)
