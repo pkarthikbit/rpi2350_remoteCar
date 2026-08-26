@@ -1,9 +1,9 @@
-/* SPP / UART service definition using the standard Nordic UUID layout.
- * Includes necessary headers and defines UUIDs for the SPP service and characteristic.
- * #define UUID_Service  "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
- * #define UUID_Transmit "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
- * #define UUID_Receive  "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
- */
+// SPP / UART service definition using the standard Nordic UUID layout.
+// Includes necessary headers and defines UUIDs for the SPP service and characteristic.
+// #define UUID_Service  "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+// #define UUID_Transmit "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
+// #define UUID_Receive  "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
+
 PRIMARY_SERVICE, 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
 CHARACTERISTIC, 6E400003-B5A3-F393-E0A9-E50E24DCCA9E, READ | NOTIFY | DYNAMIC,
 CHARACTERISTIC, 6E400002-B5A3-F393-E0A9-E50E24DCCA9E, WRITE | DYNAMIC,
