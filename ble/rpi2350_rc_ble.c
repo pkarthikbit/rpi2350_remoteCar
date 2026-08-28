@@ -74,8 +74,6 @@ static btstack_packet_callback_registration_t hci_event_callback_registration;
 
 static uint8_t ble_tx_buffer[64];
 static uint16_t ble_tx_len = 0;
-static uint8_t ble_rx_buffer[64];
-static uint16_t ble_rx_len = 0;
 
 #define APP_AD_FLAGS 0x06
 
@@ -200,20 +198,16 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
     if (att_handle == UART_RX_HANDLE) {
 
-        if (buffer_size > sizeof(ble_rx_buffer)) {
-            return ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LENGTH;
-        }
-
         // Print received BLE data directly to the console
         printf("BLE RX %u bytes: ", (unsigned)buffer_size);
         fwrite(buffer, 1, buffer_size, stdout);
         printf("\n");
 
-        switch(ble_rx_buffer[2])
+        switch(buffer[2])
         {
             case GAMEPAD_DIGITAL:
             {
-                switch(ble_rx_buffer[6])
+                switch(buffer[6])
                 {
                     /* 
                      * IN1/IN3	IN2/IN4	Spinning Direction
@@ -292,8 +286,8 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
             case GAMEPAD_ANALOG:
             case GAMEPAD_ACCL:
             {
-                angle =((ble_rx_buffer[6] >> 3)*15);
-                radius = ble_rx_buffer[6] & 0x07;
+                angle =((buffer[6] >> 3)*15);
+                radius = buffer[6] & 0x07;
                 x_value = (float)(radius*((float)(cos((float)(angle*PI/180)))));
                 y_value = (float)(radius*((float)(sin((float)(angle*PI/180)))));
 
@@ -309,7 +303,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
         }
 
-        switch(ble_rx_buffer[5])
+        switch(buffer[5])
         {
             case START_KEY:
                 DEBUG_printf( "START_KEY\n");
