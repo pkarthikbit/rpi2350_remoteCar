@@ -199,11 +199,11 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
     if (att_handle == BLE_RX_HANDLE) {
 
         // Print received BLE data directly to the console as hex and flush
-        printf("BLE RX %u bytes:", (unsigned)buffer_size);
+        DEBUG_printf("BLE RX %u bytes:", (unsigned)buffer_size);
         for (uint16_t i = 0; i < buffer_size; i++) {
-            printf(" %02X", buffer[i]);
+            DEBUG_printf(" %02X", buffer[i]);
         }
-        printf("\n");
+        DEBUG_printf("\n");
         fflush(stdout);
 
         switch(buffer[2])
