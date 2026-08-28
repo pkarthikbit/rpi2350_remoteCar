@@ -7,6 +7,7 @@
 #define _RPI2350_RC_BLE_INF_H
 
 #include <stdio.h>
+#include <math.h>
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"

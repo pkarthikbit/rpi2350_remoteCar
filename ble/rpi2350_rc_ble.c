@@ -8,6 +8,61 @@
 #include "rpi2350_rc_ble_provisioning.h"
 #include <stdio.h>
 
+#define PI 3.14159
+
+//Byte 2
+#define GAMEPAD_DIGITAL 0x01
+#define GAMEPAD_ANALOG  0x02
+#define GAMEPAD_ACCL    0x03
+
+//Byte 5
+#define START_KEY       0x1
+#define SELECT_KEY      0x2
+#define TRIANGLE_KEY    0x4 
+#define CIRCLE_KEY      0x8
+#define CROSS_KEY       0x10
+#define SQUARE_KEY      0x20
+
+//Byte 6 in case of Digital Mode GamePad
+#define UP_KEY          0x1
+#define DOWN_KEY        0x2
+#define LEFT_KEY        0x4
+#define RIGHT_KEY       0x8
+
+/******************* GPIO ********************/
+#define GPIO_DRV8833_IN1_1   1 
+#define GPIO_DRV8833_IN2_1   2
+#define GPIO_DRV8833_IN3_1   3
+#define GPIO_DRV8833_IN4_1   4
+
+#define GPIO_DRV8833_IN1_2   5 
+#define GPIO_DRV8833_IN2_2   6
+#define GPIO_DRV8833_IN3_2   7
+#define GPIO_DRV8833_IN4_2   8
+
+/**************** Debug Flags ******************/
+#ifndef NDEBUG
+/*****************************/
+#ifndef DEBUG_printf
+#define DEBUG_printf printf
+#endif
+
+#ifndef INFO_printf
+#define INFO_printf printf
+#endif
+
+#ifndef ERROR_printf
+#define ERROR_printf printf
+#endif
+/*****************************/
+#else
+/*****************************/
+#define DEBUG_DEBUG_printf(...)
+#define INFO_DEBUG_printf(...)
+#define ERROR_DEBUG_printf(...)
+/*****************************/
+#endif
+
 typedef enum {
     UART_TX_HANDLE = ATT_CHARACTERISTIC_6E400003_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
     UART_RX_HANDLE = ATT_CHARACTERISTIC_6E400002_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
@@ -17,10 +72,10 @@ static int le_notification_enabled;
 hci_con_handle_t con_handle;
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 
-static uint8_t uart_tx_buffer[64];
-static uint16_t uart_tx_len = 0;
-static uint8_t uart_rx_buffer[64];
-static uint16_t uart_rx_len = 0;
+static uint8_t ble_tx_buffer[64];
+static uint16_t ble_tx_len = 0;
+static uint8_t ble_rx_buffer[64];
+static uint16_t ble_rx_len = 0;
 
 #define APP_AD_FLAGS 0x06
 
@@ -107,8 +162,8 @@ static uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t a
 
     switch (att_handle) {
         case UART_TX_HANDLE:
-            if (uart_tx_len > 0) {
-                ret_val = att_read_callback_handle_blob(uart_tx_buffer, uart_tx_len, offset, buffer,
+            if (ble_tx_len > 0) {
+                ret_val = att_read_callback_handle_blob(ble_tx_buffer, ble_tx_len, offset, buffer,
                                                        buffer_size);
             }
             break;
@@ -134,25 +189,150 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                               uint16_t transaction_mode, uint16_t offset, uint8_t *buffer,
                               uint16_t buffer_size) {
     int ret_val = ATT_ERROR_SUCCESS;
+    uint16_t angle;
+    uint8_t radius;
+    float x_value;
+    float y_value;
 
     (void)connection_handle;
     (void)transaction_mode;
     (void)offset;
 
-    switch (att_handle) {
-        case UART_RX_HANDLE:
-            if (buffer_size > sizeof(uart_rx_buffer)) {
-                return ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LENGTH;
+    if (att_handle == UART_RX_HANDLE) {
+
+        if (buffer_size > sizeof(ble_rx_buffer)) {
+            return ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LENGTH;
+        }
+
+        switch(ble_rx_buffer[2])
+        {
+            case GAMEPAD_DIGITAL:
+            {
+                switch(ble_rx_buffer[6])
+                {
+                    /* 
+                     * IN1/IN3	IN2/IN4	Spinning Direction
+                     * Low(0)	Low(0)	Motor OFF
+                     * High(1)	Low(0)	Forward
+                     * Low(0)	High(1)	Reverse
+                     * High(1)	High(1)	Motor OFF
+                    */        
+                    case UP_KEY:
+                        DEBUG_printf("UP_KEY\n");
+                        gpio_put(GPIO_DRV8833_IN1_1, true);
+                        gpio_put(GPIO_DRV8833_IN2_1, false);
+                        gpio_put(GPIO_DRV8833_IN3_1, false);
+                        gpio_put(GPIO_DRV8833_IN4_1, true);
+
+                        gpio_put(GPIO_DRV8833_IN1_2, false);
+                        gpio_put(GPIO_DRV8833_IN2_2, true);
+                        gpio_put(GPIO_DRV8833_IN3_2, false);
+                        gpio_put(GPIO_DRV8833_IN4_2, true);
+                        break;
+
+                    case DOWN_KEY:
+                        DEBUG_printf("DOWN_KEY\n");
+                        gpio_put(GPIO_DRV8833_IN1_1, false);
+                        gpio_put(GPIO_DRV8833_IN2_1, true);
+                        gpio_put(GPIO_DRV8833_IN3_1, true);
+                        gpio_put(GPIO_DRV8833_IN4_1, false);
+
+                        gpio_put(GPIO_DRV8833_IN1_2, true);
+                        gpio_put(GPIO_DRV8833_IN2_2, false);
+                        gpio_put(GPIO_DRV8833_IN3_2, true);
+                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        break;
+
+                    case LEFT_KEY:
+                        DEBUG_printf( "LEFT_KEY\n");
+                        gpio_put(GPIO_DRV8833_IN1_1, false);
+                        gpio_put(GPIO_DRV8833_IN2_1, false);
+                        gpio_put(GPIO_DRV8833_IN3_1, false);
+                        gpio_put(GPIO_DRV8833_IN4_1, true);
+
+                        gpio_put(GPIO_DRV8833_IN1_2, false);
+                        gpio_put(GPIO_DRV8833_IN2_2, false);
+                        gpio_put(GPIO_DRV8833_IN3_2, false);
+                        gpio_put(GPIO_DRV8833_IN4_2, true);
+                        break;
+
+                    case RIGHT_KEY:
+                        DEBUG_printf( "RIGHT_KEY\n");
+                        gpio_put(GPIO_DRV8833_IN1_1, true);
+                        gpio_put(GPIO_DRV8833_IN2_1, false);
+                        gpio_put(GPIO_DRV8833_IN3_1, false);
+                        gpio_put(GPIO_DRV8833_IN4_1, false);
+
+                        gpio_put(GPIO_DRV8833_IN1_2, false);
+                        gpio_put(GPIO_DRV8833_IN2_2, true);
+                        gpio_put(GPIO_DRV8833_IN3_2, false);
+                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        break;
+
+                    default:
+                        gpio_put(GPIO_DRV8833_IN1_1, false);
+                        gpio_put(GPIO_DRV8833_IN2_1, false);
+                        gpio_put(GPIO_DRV8833_IN3_1, false);
+                        gpio_put(GPIO_DRV8833_IN4_1, false);
+
+                        gpio_put(GPIO_DRV8833_IN1_2, false);
+                        gpio_put(GPIO_DRV8833_IN2_2, false);
+                        gpio_put(GPIO_DRV8833_IN3_2, false);
+                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        break;
+                }
             }
-
-            // Print received BLE data directly to the console
-            printf("BLE RX %u bytes: ", (unsigned)buffer_size);
-            fwrite(buffer, 1, buffer_size, stdout);
-            printf("\n");
             break;
 
-        default:
+            case GAMEPAD_ANALOG:
+            case GAMEPAD_ACCL:
+            {
+                angle =((ble_rx_buffer[6] >> 3)*15);
+                radius = ble_rx_buffer[6] & 0x07;
+                x_value = (float)(radius*((float)(cos((float)(angle*PI/180)))));
+                y_value = (float)(radius*((float)(sin((float)(angle*PI/180)))));
+
+                UNUSED(x_value);
+                UNUSED(y_value);
+
+                DEBUG_printf( "x=%f, y=%f\n", x_value, y_value);
+            }
             break;
+
+            default:
+                break;
+
+        }
+
+        switch(ble_rx_buffer[5])
+        {
+            case START_KEY:
+                DEBUG_printf( "START_KEY\n");
+                break;
+
+            case SELECT_KEY:
+                DEBUG_printf( "SELECT_KEY\n");
+                break;
+
+            case TRIANGLE_KEY:
+                DEBUG_printf( "TRIANGLE_KEY\n");
+                break;
+
+            case CIRCLE_KEY:
+                DEBUG_printf( "CIRCLE_KEY\n");
+                break;
+
+            case CROSS_KEY:
+                DEBUG_printf( "CROSS_KEY\n");
+                break;    
+
+            case SQUARE_KEY:
+                DEBUG_printf( "SQUARE_KEY\n");
+                break;  
+
+            default:
+                break;      
+        }
     }
 
     return ret_val;
@@ -177,6 +357,31 @@ void rpi2350_rc_ble_init(void) {
     sm_set_authentication_requirements(SM_AUTHREQ_NO_BONDING);
 
     hci_power_control(HCI_POWER_ON);
+
+    /**************** Initialize GPIO pins ******************/
+    gpio_init(GPIO_DRV8833_IN1_1);
+    gpio_set_dir(GPIO_DRV8833_IN1_1, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN2_1);
+    gpio_set_dir(GPIO_DRV8833_IN2_1, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN3_1);
+    gpio_set_dir(GPIO_DRV8833_IN3_1, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN4_1);
+    gpio_set_dir(GPIO_DRV8833_IN4_1, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN1_2);
+    gpio_set_dir(GPIO_DRV8833_IN1_2, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN2_2);
+    gpio_set_dir(GPIO_DRV8833_IN2_2, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN3_2);
+    gpio_set_dir(GPIO_DRV8833_IN3_2, GPIO_OUT);
+
+    gpio_init(GPIO_DRV8833_IN4_2);
+    gpio_set_dir(GPIO_DRV8833_IN4_2, GPIO_OUT);
 }
 
 void rpi2350_rc_ble_10ms(void) {
