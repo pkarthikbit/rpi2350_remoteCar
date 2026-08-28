@@ -57,9 +57,9 @@
 /*****************************/
 #else
 /*****************************/
-#define DEBUG_DEBUG_printf(...)
-#define INFO_DEBUG_printf(...)
-#define ERROR_DEBUG_printf(...)
+#define DEBUG_printf(...)
+#define INFO_printf(...)
+#define ERROR_printf(...)
 /*****************************/
 #endif
 
