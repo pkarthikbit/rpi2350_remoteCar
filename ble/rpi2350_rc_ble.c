@@ -64,8 +64,8 @@
 #endif
 
 typedef enum {
-    UART_TX_HANDLE = ATT_CHARACTERISTIC_6E400003_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
-    UART_RX_HANDLE = ATT_CHARACTERISTIC_6E400002_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
+    BLE_TX_HANDLE = ATT_CHARACTERISTIC_6E400003_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
+    BLE_RX_HANDLE = ATT_CHARACTERISTIC_6E400002_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
 } attribute_handle_t;
 
 static int le_notification_enabled;
@@ -159,7 +159,7 @@ static uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t a
     (void)connection_handle;
 
     switch (att_handle) {
-        case UART_TX_HANDLE:
+        case BLE_TX_HANDLE:
             if (ble_tx_len > 0) {
                 ret_val = att_read_callback_handle_blob(ble_tx_buffer, ble_tx_len, offset, buffer,
                                                        buffer_size);
@@ -196,12 +196,15 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
     (void)transaction_mode;
     (void)offset;
 
-    if (att_handle == UART_RX_HANDLE) {
+    if (att_handle == BLE_RX_HANDLE) {
 
-        // Print received BLE data directly to the console
-        printf("BLE RX %u bytes: ", (unsigned)buffer_size);
-        fwrite(buffer, 1, buffer_size, stdout);
+        // Print received BLE data directly to the console as hex and flush
+        printf("BLE RX %u bytes:", (unsigned)buffer_size);
+        for (uint16_t i = 0; i < buffer_size; i++) {
+            printf(" %02X", buffer[i]);
+        }
         printf("\n");
+        fflush(stdout);
 
         switch(buffer[2])
         {
