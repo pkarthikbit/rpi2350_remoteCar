@@ -6,6 +6,7 @@
 #include "rpi2350_rc_ble_priv.h"
 #include "rpi2350_rc_ble_pub.h"
 #include "rpi2350_rc_ble_provisioning.h"
+#include <stdio.h>
 
 typedef enum {
     UART_TX_HANDLE = ATT_CHARACTERISTIC_6E400003_B5A3_F393_E0A9_E50E24DCCA9E_01_VALUE_HANDLE,
@@ -144,9 +145,10 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                 return ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LENGTH;
             }
 
-            memcpy(uart_rx_buffer, buffer, buffer_size);
-            uart_rx_len = buffer_size;
-            uart_rx_buffer[uart_rx_len] = '\0';
+            // Print received BLE data directly to the console
+            printf("BLE RX %u bytes: ", (unsigned)buffer_size);
+            fwrite(buffer, 1, buffer_size, stdout);
+            printf("\n");
             break;
 
         default:
