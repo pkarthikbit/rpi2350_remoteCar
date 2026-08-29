@@ -43,6 +43,7 @@ FreeRTOS-Kernel
 FreeRTOS-Kernel-Heap4 
 pico_stdlib
 hardware_adc
+hardware_pwm
 pico_cyw43_arch_lwip_threadsafe_background
 pico_btstack_ble
 pico_btstack_cyw43

@@ -21,6 +21,8 @@
 #include "btstack.h"
 #include "pico/btstack_cyw43.h"
 
+#include "hardware/pwm.h"
+
 #include "rpi2350_rc_wifi_pub.h"
 
 #endif /* _RPI2350_RC_BLE_INF_H */
