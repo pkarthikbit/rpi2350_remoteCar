@@ -342,8 +342,12 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case CROSS_KEY:
                 DEBUG_printf( "CROSS_KEY\n");
-                pwm_dutyCyl -= 0x10;
-                if (pwm_dutyCyl <= 0x10) {
+                if(pwm_dutyCyl > 0x10)
+                {
+                    pwm_dutyCyl -= 0x10;
+                }
+                else
+                {
                     pwm_dutyCyl = 0x00;
                 }
                 DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
