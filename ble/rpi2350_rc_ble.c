@@ -215,10 +215,10 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
     if (att_handle == BLE_RX_HANDLE) {
 
+        DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
+        
         switch(buffer[2])
         {
-            DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
-
             case GAMEPAD_DIGITAL:
             {
                 switch(buffer[6])
