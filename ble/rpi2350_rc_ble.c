@@ -8,6 +8,9 @@
 #include "rpi2350_rc_ble_provisioning.h"
 #include <stdio.h>
 
+// Define a reusable length macro
+#define ARRAY_LENGTH(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 #define PI 3.14159
 
 //Byte 2
@@ -365,7 +368,7 @@ void rpi2350_rc_ble_init(void) {
     hci_power_control(HCI_POWER_ON);
 
     /**************** Set GPIO function to PWM ******************/
-    for (int i = 0; i < len(pwm_pins); i++) {
+    for (int i = 0; i < ARRAY_LENGTH(pwm_pins); i++) {
         uint pin = pwm_pins[i];
         
         // 1. Configure pin for PWM hardware
