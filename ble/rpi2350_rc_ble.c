@@ -53,6 +53,8 @@ const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1,
                             GPIO_DRV8833_IN2_3, 
                             GPIO_DRV8833_IN2_4};
 
+uint pwm_dutyCyl;
+
 #undef NDEBUG
 
 /**************** Debug Flags ******************/
@@ -325,6 +327,10 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case TRIANGLE_KEY:
                 DEBUG_printf( "TRIANGLE_KEY\n");
+                pwm_dutyCyl += 0x10;
+                if (pwm_dutyCyl > 0xFF) {
+                    pwm_dutyCyl = 0xFF;
+                }
                 break;
 
             case CIRCLE_KEY:
@@ -333,6 +339,10 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case CROSS_KEY:
                 DEBUG_printf( "CROSS_KEY\n");
+                pwm_dutyCyl -= 0x10;
+                if (pwm_dutyCyl < 0x00) {
+                    pwm_dutyCyl = 0x00;
+                }
                 break;    
 
             case SQUARE_KEY:
@@ -382,6 +392,8 @@ void rpi2350_rc_ble_init(void) {
         pwm_set_clkdiv(slice_num, 4.0f);
         pwm_set_enabled(slice_num, true);
     }
+
+    pwm_dutyCyl = 0x7F; // Set initial duty cycle to 50% (127 out of 255)
 }
 
 void rpi2350_rc_ble_10ms(void) {
