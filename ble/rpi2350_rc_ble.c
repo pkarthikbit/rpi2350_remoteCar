@@ -31,14 +31,24 @@
 
 /******************* GPIO ********************/
 #define GPIO_DRV8833_IN1_1   1 
-#define GPIO_DRV8833_IN2_1   2
-#define GPIO_DRV8833_IN3_1   3
-#define GPIO_DRV8833_IN4_1   4
+#define GPIO_DRV8833_IN1_2   2
+#define GPIO_DRV8833_IN1_3   3
+#define GPIO_DRV8833_IN1_4   4
 
-#define GPIO_DRV8833_IN1_2   5 
+#define GPIO_DRV8833_IN2_1   5 
 #define GPIO_DRV8833_IN2_2   6
-#define GPIO_DRV8833_IN3_2   7
-#define GPIO_DRV8833_IN4_2   8
+#define GPIO_DRV8833_IN2_3   7
+#define GPIO_DRV8833_IN2_4   8
+
+// Array of the 8 GPIO pins you want to use
+const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1, 
+                            GPIO_DRV8833_IN1_2, 
+                            GPIO_DRV8833_IN1_3, 
+                            GPIO_DRV8833_IN1_4, 
+                            GPIO_DRV8833_IN2_1, 
+                            GPIO_DRV8833_IN2_2, 
+                            GPIO_DRV8833_IN2_3, 
+                            GPIO_DRV8833_IN2_4};
 
 #undef NDEBUG
 
@@ -215,66 +225,66 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                     */        
                     case UP_KEY:
                         DEBUG_printf("UP_KEY\n");
-                        gpio_put(GPIO_DRV8833_IN1_1, true);
-                        gpio_put(GPIO_DRV8833_IN2_1, false);
-                        gpio_put(GPIO_DRV8833_IN3_1, false);
-                        gpio_put(GPIO_DRV8833_IN4_1, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, true);
 
-                        gpio_put(GPIO_DRV8833_IN1_2, false);
-                        gpio_put(GPIO_DRV8833_IN2_2, true);
-                        gpio_put(GPIO_DRV8833_IN3_2, false);
-                        gpio_put(GPIO_DRV8833_IN4_2, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, true);
                         break;
 
                     case DOWN_KEY:
                         DEBUG_printf("DOWN_KEY\n");
-                        gpio_put(GPIO_DRV8833_IN1_1, false);
-                        gpio_put(GPIO_DRV8833_IN2_1, true);
-                        gpio_put(GPIO_DRV8833_IN3_1, true);
-                        gpio_put(GPIO_DRV8833_IN4_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
 
-                        gpio_put(GPIO_DRV8833_IN1_2, true);
-                        gpio_put(GPIO_DRV8833_IN2_2, false);
-                        gpio_put(GPIO_DRV8833_IN3_2, true);
-                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
 
                     case LEFT_KEY:
                         DEBUG_printf( "LEFT_KEY\n");
-                        gpio_put(GPIO_DRV8833_IN1_1, false);
-                        gpio_put(GPIO_DRV8833_IN2_1, false);
-                        gpio_put(GPIO_DRV8833_IN3_1, false);
-                        gpio_put(GPIO_DRV8833_IN4_1, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, true);
 
-                        gpio_put(GPIO_DRV8833_IN1_2, false);
-                        gpio_put(GPIO_DRV8833_IN2_2, false);
-                        gpio_put(GPIO_DRV8833_IN3_2, false);
-                        gpio_put(GPIO_DRV8833_IN4_2, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, true);
                         break;
 
                     case RIGHT_KEY:
                         DEBUG_printf( "RIGHT_KEY\n");
-                        gpio_put(GPIO_DRV8833_IN1_1, true);
-                        gpio_put(GPIO_DRV8833_IN2_1, false);
-                        gpio_put(GPIO_DRV8833_IN3_1, false);
-                        gpio_put(GPIO_DRV8833_IN4_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
 
-                        gpio_put(GPIO_DRV8833_IN1_2, false);
-                        gpio_put(GPIO_DRV8833_IN2_2, true);
-                        gpio_put(GPIO_DRV8833_IN3_2, false);
-                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, true);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
 
                     default:
-                        gpio_put(GPIO_DRV8833_IN1_1, false);
-                        gpio_put(GPIO_DRV8833_IN2_1, false);
-                        gpio_put(GPIO_DRV8833_IN3_1, false);
-                        gpio_put(GPIO_DRV8833_IN4_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
 
-                        gpio_put(GPIO_DRV8833_IN1_2, false);
-                        gpio_put(GPIO_DRV8833_IN2_2, false);
-                        gpio_put(GPIO_DRV8833_IN3_2, false);
-                        gpio_put(GPIO_DRV8833_IN4_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
                 }
             }
@@ -354,30 +364,21 @@ void rpi2350_rc_ble_init(void) {
 
     hci_power_control(HCI_POWER_ON);
 
-    /**************** Initialize GPIO pins ******************/
-    gpio_init(GPIO_DRV8833_IN1_1);
-    gpio_set_dir(GPIO_DRV8833_IN1_1, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN2_1);
-    gpio_set_dir(GPIO_DRV8833_IN2_1, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN3_1);
-    gpio_set_dir(GPIO_DRV8833_IN3_1, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN4_1);
-    gpio_set_dir(GPIO_DRV8833_IN4_1, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN1_2);
-    gpio_set_dir(GPIO_DRV8833_IN1_2, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN2_2);
-    gpio_set_dir(GPIO_DRV8833_IN2_2, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN3_2);
-    gpio_set_dir(GPIO_DRV8833_IN3_2, GPIO_OUT);
-
-    gpio_init(GPIO_DRV8833_IN4_2);
-    gpio_set_dir(GPIO_DRV8833_IN4_2, GPIO_OUT);
+    /**************** Set GPIO function to PWM ******************/
+    for (int i = 0; i < len(pwm_pins); i++) {
+        uint pin = pwm_pins[i];
+        
+        // 1. Configure pin for PWM hardware
+        gpio_set_function(pin, GPIO_FUNC_PWM);
+        
+        // 2. Find the slice this pin belongs to
+        uint slice_num = pwm_gpio_to_slice_num(pin);
+        
+        // 3. Configure the slice (Safe to call multiple times for shared slices)
+        pwm_set_wrap(slice_num, 255);
+        pwm_set_clkdiv(slice_num, 4.0f);
+        pwm_set_enabled(slice_num, true);
+    }
 }
 
 void rpi2350_rc_ble_10ms(void) {
