@@ -98,8 +98,8 @@ static uint16_t ble_tx_len = 0;
 static uint8_t adv_data[] = {
     // Flags general discoverable
     0x02, BLUETOOTH_DATA_TYPE_FLAGS, APP_AD_FLAGS,
-    // Local name: 1 byte type + 11 chars = 12 bytes after the length field
-    0x0C, BLUETOOTH_DATA_TYPE_COMPLETE_LOCAL_NAME, 'S', 'u', 'g', 'a', 'n', 't', 'h', '-', 'R', 'C',
+    // Local name: 1 byte type + 10 chars = 11 bytes after the length field
+    0x0B, BLUETOOTH_DATA_TYPE_COMPLETE_LOCAL_NAME, 'S', 'u', 'g', 'a', 'n', 't', 'h', '-', 'R', 'C',
 };
 // clang-format on
 
