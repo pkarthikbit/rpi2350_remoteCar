@@ -55,6 +55,9 @@ const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1,
 
 uint pwm_dutyCyl;
 
+//For debugging purposes, you can define NDEBUG to disable debug prints.
+//#undef NDEBUG
+
 /**************** Debug Flags ******************/
 #ifndef NDEBUG
 /*****************************/
@@ -327,9 +330,13 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case TRIANGLE_KEY:
                 DEBUG_printf( "TRIANGLE_KEY\n");
-                pwm_dutyCyl += 0x10;
-                if (pwm_dutyCyl > 0xFF) {
-                    pwm_dutyCyl = 0xFF;
+                if(pwm_dutyCyl <= 0xEF)
+                {
+                    pwm_dutyCyl += 0x10;
+                }
+                else
+                {
+                    //value already 0xFF
                 }
                 DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
                 break;
@@ -399,7 +406,7 @@ void rpi2350_rc_ble_init(void) {
         pwm_set_enabled(slice_num, true);
     }
 
-    pwm_dutyCyl = 0xBF; // Set initial duty cycle to 0xBF (191 out of 255)
+    pwm_dutyCyl = 0xFF; // Set any value b/w 0xBF to 0xFF
 }
 
 void rpi2350_rc_ble_10ms(void) {
