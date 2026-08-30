@@ -55,8 +55,6 @@ const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1,
 
 uint pwm_dutyCyl;
 
-#undef NDEBUG
-
 /**************** Debug Flags ******************/
 #ifndef NDEBUG
 /*****************************/
@@ -258,28 +256,28 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
                     case LEFT_KEY:
                         DEBUG_printf( "LEFT_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl); //FR FW
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl); //RR FW
 
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
 
                     case RIGHT_KEY:
                         DEBUG_printf( "RIGHT_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
 
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl); //FL FW
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl); //RL FW
                         break;
 
                     default:
@@ -342,13 +340,13 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case CROSS_KEY:
                 DEBUG_printf( "CROSS_KEY\n");
-                if(pwm_dutyCyl > 0x10)
+                if(pwm_dutyCyl > 0xBF)
                 {
                     pwm_dutyCyl -= 0x10;
                 }
                 else
                 {
-                    pwm_dutyCyl = 0x00;
+                    pwm_dutyCyl = 0xBF;
                 }
                 DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
                 break;    
@@ -401,7 +399,7 @@ void rpi2350_rc_ble_init(void) {
         pwm_set_enabled(slice_num, true);
     }
 
-    pwm_dutyCyl = 0x7F; // Set initial duty cycle to 50% (127 out of 255)
+    pwm_dutyCyl = 0xBF; // Set initial duty cycle to 0xBF (191 out of 255)
 }
 
 void rpi2350_rc_ble_10ms(void) {
