@@ -28,6 +28,9 @@
 /*****************************/
 #endif
 
+// Single variable to track state
+bool led_state = false; 
+
 /**
  * @brief Initializes the Wi-Fi functionality using the CYW43 driver.
  */
@@ -38,5 +41,9 @@ void rpi2350_rc_wifi_init(void)
 
 void rpi2350_rc_wifi_1000ms() 
 {    
-
+    // Toggle the variable value
+    led_state = !led_state; 
+    
+    // Apply the updated state to the LED
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state);
 }
