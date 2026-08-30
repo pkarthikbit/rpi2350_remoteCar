@@ -406,7 +406,7 @@ void rpi2350_rc_ble_init(void) {
         pwm_set_enabled(slice_num, true);
     }
 
-    pwm_dutyCyl = 0xFF; // Set any value b/w 0xBF to 0xFF
+    pwm_dutyCyl = 0xDF; // Set any value b/w 0xBF to 0xFF
 }
 
 void rpi2350_rc_ble_10ms(void) {
