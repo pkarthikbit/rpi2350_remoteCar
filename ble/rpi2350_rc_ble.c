@@ -33,15 +33,15 @@
 #define RIGHT_KEY       0x8
 
 /******************* GPIO ********************/
-#define GPIO_DRV8833_IN1_1   1 
-#define GPIO_DRV8833_IN1_2   2
-#define GPIO_DRV8833_IN1_3   3
-#define GPIO_DRV8833_IN1_4   4
+#define GPIO_DRV8833_IN1_1   28 
+#define GPIO_DRV8833_IN1_2   27
+#define GPIO_DRV8833_IN1_3   26
+#define GPIO_DRV8833_IN1_4   22
 
-#define GPIO_DRV8833_IN2_1   5 
-#define GPIO_DRV8833_IN2_2   6
-#define GPIO_DRV8833_IN2_3   7
-#define GPIO_DRV8833_IN2_4   8
+#define GPIO_DRV8833_IN2_1   21 
+#define GPIO_DRV8833_IN2_2   20
+#define GPIO_DRV8833_IN2_3   19
+#define GPIO_DRV8833_IN2_4   18
 
 // Array of the 8 GPIO pins you want to use
 const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1, 
