@@ -233,19 +233,6 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                     */        
                     case UP_KEY:
                         DEBUG_printf("UP_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl);
-
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl);
-                        break;
-
-                    case DOWN_KEY:
-                        DEBUG_printf("DOWN_KEY\n");
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_2, pwm_dutyCyl);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_3, pwm_dutyCyl);
@@ -257,21 +244,21 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
 
-                    case LEFT_KEY:
-                        DEBUG_printf( "LEFT_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl); //FR FW
+                    case DOWN_KEY:
+                        DEBUG_printf("DOWN_KEY\n");
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl); //RR FW
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl);
 
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl);
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl);
                         break;
 
-                    case RIGHT_KEY:
-                        DEBUG_printf( "RIGHT_KEY\n");
+                    case LEFT_KEY:
+                        DEBUG_printf( "LEFT_KEY\n");
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
@@ -281,6 +268,19 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl); //FL FW
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
                         pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl); //RL FW
+                        break;
+
+                    case RIGHT_KEY:
+                        DEBUG_printf( "RIGHT_KEY\n");
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl); //FR FW
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl); //RR FW
+
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
                         break;
 
                     default:
