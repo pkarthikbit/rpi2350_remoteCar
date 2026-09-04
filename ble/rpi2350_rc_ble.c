@@ -330,14 +330,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case TRIANGLE_KEY:
                 DEBUG_printf( "TRIANGLE_KEY\n");
-                if(pwm_dutyCyl >= 0xEF)
-                {
-                    pwm_dutyCyl = 0xFF;
-                }
-                else
-                {
-                    pwm_dutyCyl += 0x10;
-                }
+                pwm_dutyCyl = 0xEF;
       
                 DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
                 break;
@@ -348,16 +341,9 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 
             case CROSS_KEY:
                 DEBUG_printf( "CROSS_KEY\n");
-                if(pwm_dutyCyl <= 0xEF)
-                {
-                    pwm_dutyCyl = 0xDF;
-                }
-                else
-                {
-                    pwm_dutyCyl -= 0x10;
-                }
+                pwm_dutyCyl = 0xDF;
                 DEBUG_printf( "DutyCyl = %02X\n", pwm_dutyCyl);
-                break;    
+                break;  
 
             case SQUARE_KEY:
                 DEBUG_printf( "SQUARE_KEY\n");
