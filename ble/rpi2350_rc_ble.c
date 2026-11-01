@@ -33,6 +33,7 @@
 #define RIGHT_KEY       0x8
 
 /******************* GPIO ********************/
+//Pins for Motor Driver DRV8833
 #define GPIO_DRV8833_IN1_1   28 
 #define GPIO_DRV8833_IN1_2   27
 #define GPIO_DRV8833_IN1_3   26
@@ -42,6 +43,12 @@
 #define GPIO_DRV8833_IN2_2   20
 #define GPIO_DRV8833_IN2_3   19
 #define GPIO_DRV8833_IN2_4   18
+
+//Pins for RF Receiver
+#define GPIO_RF_LEFT        10
+#define GPIO_RF_RIGHT       11
+#define GPIO_RF_FORWARD     12
+#define GPIO_RF_BACKWARD    13
 
 // Array of the 8 GPIO pins you want to use
 const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1, 
@@ -54,6 +61,12 @@ const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1,
                             GPIO_DRV8833_IN2_4};
 
 uint pwm_dutyCyl;
+
+//States of the RF Receiver Pins
+bool pin_Left_state;
+bool pin_Right_state;
+bool pin_Forward_state;
+bool pin_Backward_state;
 
 //For debugging purposes, you can define NDEBUG to disable debug prints.
 //#undef NDEBUG
@@ -103,6 +116,71 @@ static uint8_t adv_data[] = {
     0x0B, BLUETOOTH_DATA_TYPE_COMPLETE_LOCAL_NAME, 'S', 'u', 'g', 'a', 'n', 't', 'h', '-', 'R', 'C',
 };
 // clang-format on
+
+static void Veh_upKey_func(uint16_t duty_cycle)
+{
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_2, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_3, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
+
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_1, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_3, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+}
+
+static void Veh_downKey_func(uint16_t duty_cycle)
+{
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_1, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_4, duty_cycle);
+
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_2, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_4, duty_cycle);
+}
+
+static void Veh_leftKey_func(uint16_t duty_cycle)
+{
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
+
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_1, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false); //FL FW
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_3, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false); //RL FW
+}
+
+static void Veh_rightKey_func(uint16_t duty_cycle)
+{
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false); //FR FW
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_2, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_3, duty_cycle);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false); //RR FW
+
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+}
+
+static void Veh_stall(void)
+{
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
+
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
+    pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+}
 
 static const uint8_t adv_data_len = sizeof(adv_data);
 /**
@@ -233,66 +311,27 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                     */        
                     case UP_KEY:
                         DEBUG_printf("UP_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
-
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+                        Veh_upKey_func(pwm_dutyCyl);
                         break;
 
                     case DOWN_KEY:
                         DEBUG_printf("DOWN_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, pwm_dutyCyl);
-
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, pwm_dutyCyl);
+                        Veh_downKey_func(pwm_dutyCyl);
                         break;
 
                     case LEFT_KEY:
                         DEBUG_printf( "LEFT_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
+                        Veh_leftKey_func(pwm_dutyCyl);
 
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false); //FL FW
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false); //RL FW
                         break;
 
                     case RIGHT_KEY:
                         DEBUG_printf( "RIGHT_KEY\n");
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false); //FR FW
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, pwm_dutyCyl);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false); //RR FW
-
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+                        Veh_rightKey_func(pwm_dutyCyl);
                         break;
 
                     default:
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN1_4, false);
-
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_1, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_2, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_3, false);
-                        pwm_set_gpio_level(GPIO_DRV8833_IN2_4, false);
+                        Veh_stall();
                         break;
                 }
             }
@@ -388,11 +427,54 @@ void rpi2350_rc_ble_init(void) {
         pwm_set_enabled(slice_num, true);
     }
 
+    /* GPIO pin init for the RF Receiver */
+    gpio_init(GPIO_RF_LEFT);
+    gpio_set_dir(GPIO_RF_LEFT, GPIO_IN);
+    gpio_pull_down(GPIO_RF_LEFT);
+
+    gpio_init(GPIO_RF_RIGHT);
+    gpio_set_dir(GPIO_RF_RIGHT, GPIO_IN);
+    gpio_pull_down(GPIO_RF_RIGHT);
+
+    gpio_init(GPIO_RF_FORWARD);
+    gpio_set_dir(GPIO_RF_FORWARD, GPIO_IN);
+    gpio_pull_down(GPIO_RF_FORWARD);
+
+    gpio_init(GPIO_RF_BACKWARD);
+    gpio_set_dir(GPIO_RF_BACKWARD, GPIO_IN);
+    gpio_pull_down(GPIO_RF_BACKWARD);
+
     pwm_dutyCyl = 0xDF; // Set any value b/w 0xBF to 0xFF
 }
 
 void rpi2350_rc_ble_10ms(void) {
     if (le_notification_enabled && con_handle != HCI_CON_HANDLE_INVALID) {
         att_server_request_can_send_now_event(con_handle);
+    }
+
+    pin_Left_state = gpio_get(GPIO_RF_LEFT);
+    pin_Right_state = gpio_get(GPIO_RF_RIGHT);
+    pin_Forward_state = gpio_get(GPIO_RF_FORWARD);
+    pin_Backward_state = gpio_get(GPIO_RF_BACKWARD);
+
+    if (pin_Left_state) {
+        Veh_leftKey_func(pwm_dutyCyl);
+    } else {
+        Veh_stall();
+    }
+    if (pin_Right_state) {
+        Veh_rightKey_func(pwm_dutyCyl);
+    } else {
+        Veh_stall();
+    }
+    if (pin_Forward_state) {
+        Veh_upKey_func(pwm_dutyCyl);
+    } else {
+        Veh_stall();
+    }
+    if (pin_Backward_state) {
+        Veh_downKey_func(pwm_dutyCyl);
+    } else {
+        Veh_stall();
     }
 }
