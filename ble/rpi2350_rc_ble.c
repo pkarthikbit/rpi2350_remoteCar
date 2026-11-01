@@ -463,24 +463,23 @@ void rpi2350_rc_ble_10ms(void) {
     pin_Forward_state = gpio_get(GPIO_RF_FORWARD);
     pin_Backward_state = gpio_get(GPIO_RF_BACKWARD);
 
-    if (pin_Left_state) {
+    if (pin_Left_state) 
+    {
         Veh_leftKey_func(pwm_dutyCyl);
-    } else {
-        //do nothing
-    }
-    if (pin_Right_state) {
+    } 
+    else if (pin_Right_state)
+    {
         Veh_rightKey_func(pwm_dutyCyl);
-    } else {
-        //do nothing
     }
-    if (pin_Forward_state) {
+    else if (pin_Forward_state) 
+    {
         Veh_upKey_func(pwm_dutyCyl);
-    } else {
-        //do nothing
-    }
-    if (pin_Backward_state) {
+    } 
+    else if (pin_Backward_state) {
         Veh_downKey_func(pwm_dutyCyl);
-    } else {
-        //do nothing
+    } 
+    else 
+    {
+        Veh_stall();
     }
 }
