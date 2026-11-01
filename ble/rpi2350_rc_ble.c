@@ -60,7 +60,7 @@ const uint pwm_pins[8] = {GPIO_DRV8833_IN1_1,
                             GPIO_DRV8833_IN2_3, 
                             GPIO_DRV8833_IN2_4};
 
-uint pwm_dutyCyl;
+uint16_t pwm_dutyCyl;
 
 //States of the RF Receiver Pins
 bool pin_Left_state;
@@ -69,7 +69,7 @@ bool pin_Forward_state;
 bool pin_Backward_state;
 
 //For debugging purposes, you can define NDEBUG to disable debug prints.
-//#undef NDEBUG
+#undef NDEBUG
 
 /**************** Debug Flags ******************/
 #ifndef NDEBUG
@@ -119,6 +119,8 @@ static uint8_t adv_data[] = {
 
 static void Veh_upKey_func(uint16_t duty_cycle)
 {
+    DEBUG_printf("UP_KEY\n");
+
     pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_2, duty_cycle);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_3, duty_cycle);
@@ -132,6 +134,8 @@ static void Veh_upKey_func(uint16_t duty_cycle)
 
 static void Veh_downKey_func(uint16_t duty_cycle)
 {
+    DEBUG_printf("DOWN_KEY\n");
+    
     pwm_set_gpio_level(GPIO_DRV8833_IN1_1, duty_cycle);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
@@ -145,6 +149,8 @@ static void Veh_downKey_func(uint16_t duty_cycle)
 
 static void Veh_leftKey_func(uint16_t duty_cycle)
 {
+    DEBUG_printf("LEFT_KEY\n");
+
     pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
@@ -158,6 +164,8 @@ static void Veh_leftKey_func(uint16_t duty_cycle)
 
 static void Veh_rightKey_func(uint16_t duty_cycle)
 {
+    DEBUG_printf("RIGHT_KEY\n");
+    
     pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false); //FR FW
     pwm_set_gpio_level(GPIO_DRV8833_IN1_2, duty_cycle);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_3, duty_cycle);
@@ -171,6 +179,8 @@ static void Veh_rightKey_func(uint16_t duty_cycle)
 
 static void Veh_stall(void)
 {
+    DEBUG_printf("STALL\n");
+
     pwm_set_gpio_level(GPIO_DRV8833_IN1_1, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_2, false);
     pwm_set_gpio_level(GPIO_DRV8833_IN1_3, false);
@@ -310,23 +320,19 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
                      * High(1)	High(1)	Motor OFF
                     */        
                     case UP_KEY:
-                        DEBUG_printf("UP_KEY\n");
                         Veh_upKey_func(pwm_dutyCyl);
                         break;
 
                     case DOWN_KEY:
-                        DEBUG_printf("DOWN_KEY\n");
                         Veh_downKey_func(pwm_dutyCyl);
                         break;
 
                     case LEFT_KEY:
-                        DEBUG_printf( "LEFT_KEY\n");
                         Veh_leftKey_func(pwm_dutyCyl);
 
                         break;
 
                     case RIGHT_KEY:
-                        DEBUG_printf( "RIGHT_KEY\n");
                         Veh_rightKey_func(pwm_dutyCyl);
                         break;
 
@@ -460,21 +466,21 @@ void rpi2350_rc_ble_10ms(void) {
     if (pin_Left_state) {
         Veh_leftKey_func(pwm_dutyCyl);
     } else {
-        Veh_stall();
+        //do nothing
     }
     if (pin_Right_state) {
         Veh_rightKey_func(pwm_dutyCyl);
     } else {
-        Veh_stall();
+        //do nothing
     }
     if (pin_Forward_state) {
         Veh_upKey_func(pwm_dutyCyl);
     } else {
-        Veh_stall();
+        //do nothing
     }
     if (pin_Backward_state) {
         Veh_downKey_func(pwm_dutyCyl);
     } else {
-        Veh_stall();
+        //do nothing
     }
 }
