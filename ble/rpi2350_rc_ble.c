@@ -67,10 +67,6 @@ bool pin_Left_state;
 bool pin_Right_state;
 bool pin_Forward_state;
 bool pin_Backward_state;
-static bool previous_pin_Left_state;
-static bool previous_pin_Right_state;
-static bool previous_pin_Forward_state;
-static bool previous_pin_Backward_state;
 
 //For debugging purposes, you can define NDEBUG to disable debug prints.
 #undef NDEBUG
@@ -454,11 +450,6 @@ void rpi2350_rc_ble_init(void) {
     gpio_set_dir(GPIO_RF_BACKWARD, GPIO_IN);
     gpio_pull_down(GPIO_RF_BACKWARD);
 
-    previous_pin_Left_state = gpio_get(GPIO_RF_LEFT);
-    previous_pin_Right_state = gpio_get(GPIO_RF_RIGHT);
-    previous_pin_Forward_state = gpio_get(GPIO_RF_FORWARD);
-    previous_pin_Backward_state = gpio_get(GPIO_RF_BACKWARD);
-
     pwm_dutyCyl = 0xDF; // Set any value b/w 0xBF to 0xFF
 }
 
@@ -472,28 +463,23 @@ void rpi2350_rc_ble_10ms(void) {
     pin_Forward_state = gpio_get(GPIO_RF_FORWARD);
     pin_Backward_state = gpio_get(GPIO_RF_BACKWARD);
 
-    if (pin_Left_state && !previous_pin_Left_state)
+    if (pin_Left_state)
     {
         Veh_leftKey_func(pwm_dutyCyl);
     } 
-    else if (pin_Right_state && !previous_pin_Right_state)
+    else if (pin_Right_state)
     {
         Veh_rightKey_func(pwm_dutyCyl);
     }
-    else if (pin_Forward_state && !previous_pin_Forward_state)
+    else if (pin_Forward_state)
     {
         Veh_upKey_func(pwm_dutyCyl);
     } 
-    else if (pin_Backward_state && !previous_pin_Backward_state) {
+    else if (pin_Backward_state) {
         Veh_downKey_func(pwm_dutyCyl);
-    } else if (!pin_Left_state && !pin_Right_state && !pin_Forward_state &&
-               !pin_Backward_state)
+    } 
+    else 
     {
         Veh_stall();
     }
-
-    previous_pin_Left_state = pin_Left_state;
-    previous_pin_Right_state = pin_Right_state;
-    previous_pin_Forward_state = pin_Forward_state;
-    previous_pin_Backward_state = pin_Backward_state;
 }
