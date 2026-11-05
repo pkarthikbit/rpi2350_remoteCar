@@ -2,9 +2,9 @@
  * Copyright (c) inveh.
  *
  */
-#include "rpi2350_rc_wifi_inf.h"
-#include "rpi2350_rc_wifi_priv.h"
-#include "rpi2350_rc_wifi_pub.h"
+#include "core_1_inf.h"
+#include "core_1_priv.h"
+#include "core_1_pub.h"
 
 #ifndef NDEBUG
 /*****************************/
@@ -34,12 +34,12 @@ bool led_state = false;
 /**
  * @brief Initializes the Wi-Fi functionality using the CYW43 driver.
  */
-void rpi2350_rc_wifi_init(void) 
+void core_1_init(void) 
 {
 
 }
 
-void rpi2350_rc_wifi_1000ms() 
+void core_1_1000ms() 
 {    
     // Toggle the variable value
     led_state = !led_state; 
