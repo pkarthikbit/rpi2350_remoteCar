@@ -6,6 +6,8 @@
 #include "core_0_priv.h"
 #include "core_0_pub.h"
 
+#define ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
+
 /******************* GPIO ********************/
 //Pins for Motor Driver DRV8833
 #define GPIO_DRV8833_IN1_1   28 
