@@ -28,15 +28,16 @@
 /*****************************/
 #endif
 
-// Single variable to track state
-bool led_state = false; 
+// Single variable to track state of the LED
+static bool led_state = false;
 
 /**
- * @brief Initializes the Wi-Fi functionality using the CYW43 driver.
+ * @brief Initializes the onboard LED.
  */
 void core_1_init(void) 
 {
-
+     gpio_init(PICO_DEFAULT_LED_PIN);
+     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 }
 
 void core_1_1000ms() 
@@ -45,5 +46,5 @@ void core_1_1000ms()
     led_state = !led_state; 
     
     // Apply the updated state to the LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state);
+    gpio_put(PICO_DEFAULT_LED_PIN, led_state);
 }
