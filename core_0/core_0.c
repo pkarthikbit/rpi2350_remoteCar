@@ -21,8 +21,8 @@
 #define GPIO_DRV8833_IN2_4   18
 
 //Pins for RF Receiver
-#define GPIO_RF_LEFT        10
-#define GPIO_RF_RIGHT       11
+#define GPIO_RF_LEFT        11
+#define GPIO_RF_RIGHT       10
 #define GPIO_RF_FORWARD     12
 #define GPIO_RF_BACKWARD    13
 
@@ -45,7 +45,7 @@ bool pin_Forward_state;
 bool pin_Backward_state;
 
 //For debugging purposes, you can define NDEBUG to disable debug prints.
-#undef NDEBUG
+//#undef NDEBUG
 
 /**************** Debug Flags ******************/
 #ifndef NDEBUG
